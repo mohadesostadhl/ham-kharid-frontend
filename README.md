@@ -20,5 +20,10 @@ npm.cmd run build
 npm.cmd run preview
 ```
 
+With both servers running and the fictional dataset seeded, execute
+`npm.cmd run test:e2e`. The eight integration tests use installed Microsoft Edge,
+cover seller/buyer/order flows and mobile accessibility, and generate an HTML report
+at `playwright-report/index.html`. They create uniquely named fictional records.
+
 The backend repository contains the shared `docs/` directory, including the setup,
 API, design system, and testing guides. No hosting or remote publishing is configured.
