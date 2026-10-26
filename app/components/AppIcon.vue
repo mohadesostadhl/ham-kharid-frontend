@@ -1,0 +1,56 @@
+<script setup lang="ts">
+import {
+  ArrowLeft,
+  ArrowUpLeft,
+  Check,
+  CheckCheck,
+  ChevronLeft,
+  Clock3,
+  Coffee,
+  Leaf,
+  Menu,
+  Package,
+  Plus,
+  Search,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkles,
+  Sprout,
+  Truck,
+  Users,
+  X,
+  LogOut,
+  LayoutDashboard,
+  Minus,
+  CircleAlert,
+} from '@lucide/vue'
+const icons = {
+  arrow: ArrowLeft,
+  diagonal: ArrowUpLeft,
+  check: Check,
+  checks: CheckCheck,
+  chevron: ChevronLeft,
+  clock: Clock3,
+  coffee: Coffee,
+  leaf: Leaf,
+  menu: Menu,
+  package: Package,
+  plus: Plus,
+  search: Search,
+  shield: ShieldCheck,
+  bag: ShoppingBag,
+  sparkles: Sparkles,
+  sprout: Sprout,
+  truck: Truck,
+  users: Users,
+  close: X,
+  logout: LogOut,
+  dashboard: LayoutDashboard,
+  minus: Minus,
+  alert: CircleAlert,
+}
+defineProps<{ name: keyof typeof icons; size?: number }>()
+</script>
+<template>
+  <component :is="icons[name]" :size="size || 20" :stroke-width="1.7" aria-hidden="true" />
+</template>
