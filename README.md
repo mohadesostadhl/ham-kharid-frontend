@@ -21,11 +21,14 @@ npm.cmd run preview
 ```
 
 With both servers running and the fictional dataset seeded, execute
-`npm.cmd run test:e2e`. The nine integration tests use installed Microsoft Edge,
+`npm.cmd run test:e2e`. The ten integration tests use installed Microsoft Edge,
 cover seller/buyer/order flows and mobile accessibility, and generate an HTML report
 at `playwright-report/index.html`. They create uniquely named fictional records.
 
-The buyer account includes a fake wallet top-up form and transaction history. New
+The `/profile` page shows user details and, for buyers, a fake wallet top-up form
+and transaction history. `/account` focuses on reservations and orders. The app bar
+profile icon opens account details, a fresh wallet balance, profile/purchases links
+and logout; it closes on outside interaction, Escape, or navigation. New
 accounts start at zero; charge the wallet before reserving. Cancellation and failed
 campaigns return the paid amount; successful campaigns create orders without another
 debit. Start the backend deadline worker to finalize expired campaigns. All money

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { navigateTo, useRoute } from '#imports'
+import { useRoute } from '#imports'
 import { useApi } from '~/composables/useApi'
-const { user, session, logout } = useApi()
+const { user, session } = useApi()
 const menu = ref(false)
 const authError = ref('')
 const route = useRoute()
@@ -13,15 +13,6 @@ onMounted(async () => {
     authError.value = 'ارتباط با سرور برقرار نشد. برای تلاش دوباره صفحه را تازه کنید.'
   }
 })
-async function signout() {
-  try {
-    await logout()
-    menu.value = false
-    await navigateTo('/')
-  } catch (e) {
-    authError.value = (e as Error).message
-  }
-}
 </script>
 <template>
   <div class="site-shell">
@@ -49,9 +40,11 @@ async function signout() {
               ><AppIcon :name="user.role === 'seller' ? 'dashboard' : 'bag'" /><span>{{
                 user.role === 'seller' ? 'پنل فروشنده' : 'خریدهای من'
               }}</span></NuxtLink
-            ><button class="icon-button desktop-only" aria-label="خروج از حساب" @click="signout">
-              <AppIcon name="logout" />
-            </button> </template
+            ><ProfileMenu
+              :key="user.id"
+              :navigation-open="menu"
+              @opened="menu = false"
+            /> </template
           ><NuxtLink v-else to="/auth" class="button secondary compact"
             ><AppIcon name="users" :size="18" /> ورود / عضویت</NuxtLink
           ><button
@@ -76,7 +69,7 @@ async function signout() {
         ><NuxtLink to="/how-it-works">چطور کار می‌کند؟</NuxtLink
         ><NuxtLink v-if="user" :to="user.role === 'seller' ? '/seller' : '/account'"
           >حساب من</NuxtLink
-        ><button v-if="user" @click="signout">خروج از حساب</button>
+        ><NuxtLink v-if="user" to="/profile">پروفایل من</NuxtLink>
       </nav>
     </header>
     <div v-if="authError" class="container">

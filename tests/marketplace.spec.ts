@@ -34,13 +34,62 @@ async function noOverflow(page: Page) {
 }
 
 async function topUp(page: Page, amount: number) {
-  await page.goto('/account#wallet')
+  await page.goto('/profile#wallet')
   await page.getByLabel('مبلغ شارژ (تومان)').fill(String(amount))
   await page.getByRole('button', { name: 'شارژ نمایشی کیف پول', exact: true }).click()
   await expect(
     page.getByRole('status').filter({ hasText: 'کیف پول با موفقیت شارژ شد' }),
   ).toBeVisible()
 }
+
+async function signout(page: Page) {
+  await page.getByRole('button', { name: 'حساب کاربری', exact: true }).click()
+  await page.getByRole('button', { name: 'خروج از حساب', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'حساب کاربری', exact: true })).not.toBeVisible()
+}
+
+test('profile page and app bar popup on desktop and mobile', async ({ page }, info) => {
+  await login(page, 'buyer_demo')
+  await page.goto('/profile')
+  await expect(page.getByRole('heading', { name: 'اطلاعات کاربری' })).toBeVisible()
+  await expect(page.locator('.profile-fields')).toContainText('buyer_demo')
+  await expect(page.locator('.wallet-panel')).toBeVisible()
+  for (const width of [1440, 375]) {
+    await page.setViewportSize({ width, height: 1000 })
+    const trigger = page.getByRole('button', { name: 'حساب کاربری', exact: true })
+    const popup = page.getByRole('region', { name: 'منوی حساب کاربری' })
+    await trigger.click()
+    await expect(popup).toContainText('buyer_demo')
+    await expect(popup.locator('.profile-wallet-link')).toContainText('تومان')
+    await noOverflow(page)
+    await page.screenshot({ path: info.outputPath(`profile-menu-${width}.png`), fullPage: true })
+    const a11y = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+      .analyze()
+    expect(a11y.violations).toEqual([])
+    await page.keyboard.press('Escape')
+    await expect(popup).not.toBeVisible()
+    await expect(trigger).toBeFocused()
+    await trigger.click()
+    await page.locator('.announcement').click()
+    await expect(popup).not.toBeVisible()
+    await trigger.click()
+    await popup.getByRole('link', { name: 'پروفایل من', exact: true }).click()
+    await expect(popup).not.toBeVisible()
+  }
+  await signout(page)
+  await page.goto('/profile')
+  await expect(page.getByRole('heading', { name: 'برای دیدن پروفایل وارد شوید' })).toBeVisible()
+  await expect(page.locator('.profile-fields')).toHaveCount(0)
+  await login(page, 'seller_demo')
+  await page.goto('/profile')
+  await expect(page.locator('.profile-fields')).toContainText('فروشنده')
+  await expect(page.locator('.wallet-panel')).toHaveCount(0)
+  await page.getByRole('button', { name: 'حساب کاربری', exact: true }).click()
+  await expect(
+    page.locator('.profile-popup').getByRole('link', { name: 'پنل فروشنده' }),
+  ).toBeVisible()
+})
 
 function settleTestCampaign(id: number) {
   expect(Number.isInteger(id)).toBe(true)
@@ -107,7 +156,7 @@ test('buyer session, reservation limit, persistence, cancellation, and dialog ke
   await page.getByRole('button', { name: 'بله، لغو رزرو' }).click()
   await expect(page.getByRole('status').filter({ hasText: 'رزرو لغو شد' })).toBeVisible()
   await expect(row.getByText('لغوشده', { exact: true })).toBeVisible()
-  await page.getByRole('button', { name: 'خروج از حساب', exact: true }).click()
+  await signout(page)
   await page.goto('/account')
   await expect(page.getByText('خریدها در حساب خریدار شما هستند')).toBeVisible()
 })
@@ -155,7 +204,7 @@ test('seller creates product and campaign; buyer reserves; deadline creates orde
     .click()
   await expect(page.getByRole('status').filter({ hasText: 'کمپین منتشر شد' })).toBeVisible()
   await page.screenshot({ path: info.outputPath('seller-desktop.png'), fullPage: true })
-  await page.getByRole('button', { name: 'خروج از حساب', exact: true }).click()
+  await signout(page)
   await signup(page, buyer, 'buyer')
   await topUp(page, 100000)
   await page.goto(`/campaigns/${campaign.id}`)
@@ -163,11 +212,12 @@ test('seller creates product and campaign; buyer reserves; deadline creates orde
   await expect(page.getByText('حدنصاب تکمیل شد', { exact: true })).toBeVisible()
   await page.screenshot({ path: info.outputPath('detail-desktop.png'), fullPage: true })
   settleTestCampaign(campaign.id)
-  await page.goto('/account')
+  await page.goto('/profile')
   await expect(page.locator('.wallet-balance')).toContainText('۲۵٬۰۰۰')
+  await page.goto('/account')
   await page.getByRole('button', { name: 'سفارش‌های من', exact: true }).click()
   await expect(page.locator('.account-order').filter({ hasText: title })).toContainText('۷۵٬۰۰۰')
-  await page.getByRole('button', { name: 'خروج از حساب', exact: true }).click()
+  await signout(page)
   await login(page, seller)
   await page.getByRole('button', { name: 'سفارش‌ها', exact: true }).click()
   const order = page.locator('.account-order').filter({ hasText: title })
@@ -204,8 +254,10 @@ test('wallet top-up, insufficient funds, failed campaign refund and accessible h
   settleTestCampaign(campaignId)
   settleTestCampaign(campaignId)
   await page.goto('/account')
-  await expect(page.locator('.wallet-balance')).toContainText('۱۰۰٬۰۰۰')
   await expect(page.locator('.account-item')).toContainText('آزادشده')
+  await expect(page.locator('.wallet-panel')).toHaveCount(0)
+  await page.goto('/profile')
+  await expect(page.locator('.wallet-balance')).toContainText('۱۰۰٬۰۰۰')
   await page.getByText('سابقهٔ تراکنش‌های کیف پول', { exact: true }).click()
   await expect(page.locator('.transaction-row')).toHaveCount(3)
   await expect(page.locator('.transaction-row').filter({ hasText: 'بازگشت وجه' })).toHaveCount(1)
@@ -273,7 +325,15 @@ test('server error feedback can recover', async ({ page }) => {
 for (const width of [375, 768, 1024]) {
   test(`responsive RTL screens at ${width}px`, async ({ page }, info) => {
     await page.setViewportSize({ width, height: 900 })
-    for (const path of ['/', '/campaigns/1', '/auth', '/how-it-works', '/account', '/seller']) {
+    for (const path of [
+      '/',
+      '/campaigns/1',
+      '/auth',
+      '/how-it-works',
+      '/account',
+      '/profile',
+      '/seller',
+    ]) {
       await page.goto(path)
       await expect(page.locator('main h1').first()).toBeVisible()
       if (path === '/') await expect(page.locator('.campaign-card').first()).toBeVisible()

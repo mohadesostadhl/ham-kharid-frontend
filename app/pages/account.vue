@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { navigateTo, useRoute } from '#imports'
 import { useApi } from '~/composables/useApi'
 import { useResource } from '~/composables/useResource'
-import type { Order, Reservation, Wallet } from '~/types'
+import type { Order, Reservation } from '~/types'
 import { date, money, number } from '~/utils/format'
 const { request, user, ready, session } = useApi()
+const route = useRoute()
+onMounted(() => {
+  if (route.hash === '#wallet') navigateTo('/profile#wallet', { replace: true })
+})
 const tab = ref('reservations')
 const selected = ref<Reservation | null>(null)
 const busy = ref(false)
@@ -13,12 +18,11 @@ const success = ref('')
 const { data, loading, error, refresh } = useResource(async () => {
   if (!ready.value) await session()
   if (!user.value || user.value.role !== 'buyer') return null
-  const [reservations, orders, wallet] = await Promise.all([
+  const [reservations, orders] = await Promise.all([
     request<Reservation[]>('/reservations/'),
     request<Order[]>('/orders/'),
-    request<Wallet>('/wallet/'),
   ])
-  return { reservations, orders, wallet }
+  return { reservations, orders }
 })
 const activeCount = computed(
   () => data.value?.reservations.filter((r) => r.status === 'active').length || 0,
@@ -49,8 +53,8 @@ async function cancel() {
         <h1 style="font-size: 2rem">خریدهای من</h1>
         <p v-if="user">{{ user.display_name }}، همراهی‌ات ارزشمند است.</p>
       </div>
-      <NuxtLink to="/" class="button secondary compact"
-        >کشف خریدها <AppIcon name="arrow" :size="17"
+      <NuxtLink to="/profile" class="button secondary compact"
+        >پروفایل و کیف پول <AppIcon name="profile" :size="17"
       /></NuxtLink>
     </div>
     <div v-if="ready && (!user || user.role !== 'buyer')" class="empty-state">
@@ -60,7 +64,6 @@ async function cancel() {
       <NuxtLink to="/auth?redirect=/account" class="button">ورود به حساب</NuxtLink>
     </div>
     <template v-else>
-      <WalletPanel v-if="data" :wallet="data.wallet" @updated="refresh" />
       <div class="summary-grid">
         <div class="summary-card">
           <span><AppIcon name="bag" /></span>
