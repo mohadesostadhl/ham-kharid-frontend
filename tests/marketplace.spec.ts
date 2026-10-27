@@ -33,6 +33,30 @@ async function noOverflow(page: Page) {
   expect(dimensions.scroll).toBeLessThanOrEqual(dimensions.width + 1)
 }
 
+async function topUp(page: Page, amount: number) {
+  await page.goto('/account#wallet')
+  await page.getByLabel('مبلغ شارژ (تومان)').fill(String(amount))
+  await page.getByRole('button', { name: 'شارژ نمایشی کیف پول', exact: true }).click()
+  await expect(
+    page.getByRole('status').filter({ hasText: 'کیف پول با موفقیت شارژ شد' }),
+  ).toBeVisible()
+}
+
+function settleTestCampaign(id: number) {
+  expect(Number.isInteger(id)).toBe(true)
+  const backend = resolve('../backend')
+  execFileSync(
+    resolve(backend, '.venv/Scripts/python.exe'),
+    [
+      'manage.py',
+      'shell',
+      '-c',
+      `from market.models import Campaign; from django.utils import timezone; from market.services import settle_campaign; Campaign.objects.filter(pk=${id}).update(deadline=timezone.now()); settle_campaign(${id})`,
+    ],
+    { cwd: backend },
+  )
+}
+
 test('desktop discovery, search, categories, API proxy, and accessibility', async ({
   page,
 }, info) => {
@@ -70,9 +94,9 @@ test('buyer session, reservation limit, persistence, cancellation, and dialog ke
   await expect(page.getByRole('status').filter({ hasText: 'رزرو شما ثبت شد' })).toBeVisible()
   await page.reload()
   await expect(page.getByRole('button', { name: /^رزرو با/ })).toBeVisible()
-  for (let i = 0; i < 4; i++) await page.getByRole('button', { name: 'افزایش تعداد' }).click()
-  await page.getByRole('button', { name: /^رزرو با/ }).click()
-  await expect(page.getByRole('alert').filter({ hasText: 'سقف رزرو' })).toBeVisible()
+  for (let i = 0; i < 3; i++) await page.getByRole('button', { name: 'افزایش تعداد' }).click()
+  await expect(page.getByRole('button', { name: 'افزایش تعداد' })).toBeDisabled()
+  await expect(page.getByText(/۱ واحد قبلاً رزرو کرده‌اید/)).toBeVisible()
   await page.goto('/account')
   const row = page.locator('.account-item').filter({ hasText: 'قهوهٔ ترکیبی روزانه' })
   await row.getByRole('button', { name: 'لغو رزرو' }).click()
@@ -133,27 +157,14 @@ test('seller creates product and campaign; buyer reserves; deadline creates orde
   await page.screenshot({ path: info.outputPath('seller-desktop.png'), fullPage: true })
   await page.getByRole('button', { name: 'خروج از حساب', exact: true }).click()
   await signup(page, buyer, 'buyer')
+  await topUp(page, 100000)
   await page.goto(`/campaigns/${campaign.id}`)
   await page.getByRole('button', { name: /^رزرو با/ }).click()
   await expect(page.getByText('حدنصاب تکمیل شد', { exact: true })).toBeVisible()
   await page.screenshot({ path: info.outputPath('detail-desktop.png'), fullPage: true })
-  const backend = resolve('../backend')
-  // Only the campaign created by this test is advanced; the demo dataset is retained.
-  expect(Number.isInteger(campaign.id)).toBe(true)
-  execFileSync(
-    resolve(backend, '.venv/Scripts/python.exe'),
-    [
-      'manage.py',
-      'shell',
-      '-c',
-      `from market.models import Campaign; from django.utils import timezone; Campaign.objects.filter(pk=${campaign.id}).update(deadline=timezone.now())`,
-    ],
-    { cwd: backend },
-  )
-  execFileSync(resolve(backend, '.venv/Scripts/python.exe'), ['manage.py', 'process_deadlines'], {
-    cwd: backend,
-  })
+  settleTestCampaign(campaign.id)
   await page.goto('/account')
+  await expect(page.locator('.wallet-balance')).toContainText('۲۵٬۰۰۰')
   await page.getByRole('button', { name: 'سفارش‌های من', exact: true }).click()
   await expect(page.locator('.account-order').filter({ hasText: title })).toContainText('۷۵٬۰۰۰')
   await page.getByRole('button', { name: 'خروج از حساب', exact: true }).click()
@@ -164,6 +175,50 @@ test('seller creates product and campaign; buyer reserves; deadline creates orde
   await expect(order.getByText('ارسال‌شده', { exact: true })).toBeVisible()
   await order.getByRole('button', { name: 'ثبت تحویل', exact: true }).click()
   await expect(order.getByText('تحویل‌شده', { exact: true })).toBeVisible()
+})
+
+test('wallet top-up, insufficient funds, failed campaign refund and accessible history', async ({
+  page,
+}, info) => {
+  const suffix = Date.now().toString()
+  const backend = resolve('../backend')
+  const output = execFileSync(
+    resolve(backend, '.venv/Scripts/python.exe'),
+    [
+      'manage.py',
+      'shell',
+      '-c',
+      `from market.models import Campaign, Product; from django.utils import timezone; from datetime import timedelta; c=Campaign.objects.create(product=Product.objects.get(pk=1), title='Wallet QA ${suffix}', group_price=70000, min_quantity=3, capacity=5, buyer_limit=3, deadline=timezone.now()+timedelta(hours=1), status='active'); print(c.pk)`,
+    ],
+    { cwd: backend, encoding: 'utf8' },
+  )
+  const campaignId = Number(output.trim().split(/\r?\n/).at(-1))
+  await signup(page, `wallet_${suffix}`, 'buyer')
+  await page.goto(`/campaigns/${campaignId}`)
+  await expect(page.getByRole('button', { name: /^رزرو با/ })).toBeDisabled()
+  await expect(page.getByText(/موجودی کافی نیست/)).toBeVisible()
+  await topUp(page, 100000)
+  await page.goto(`/campaigns/${campaignId}`)
+  await page.getByRole('button', { name: /^رزرو با/ }).click()
+  await expect(page.getByRole('status').filter({ hasText: 'رزرو شما ثبت شد' })).toBeVisible()
+  settleTestCampaign(campaignId)
+  settleTestCampaign(campaignId)
+  await page.goto('/account')
+  await expect(page.locator('.wallet-balance')).toContainText('۱۰۰٬۰۰۰')
+  await expect(page.locator('.account-item')).toContainText('آزادشده')
+  await page.getByText('سابقهٔ تراکنش‌های کیف پول', { exact: true }).click()
+  await expect(page.locator('.transaction-row')).toHaveCount(3)
+  await expect(page.locator('.transaction-row').filter({ hasText: 'بازگشت وجه' })).toHaveCount(1)
+  await page.screenshot({ path: info.outputPath('wallet-desktop.png'), fullPage: true })
+  for (const width of [1440, 375]) {
+    await page.setViewportSize({ width, height: 1000 })
+    await noOverflow(page)
+    const a11y = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+      .analyze()
+    expect(a11y.violations).toEqual([])
+  }
+  await page.screenshot({ path: info.outputPath('wallet-mobile.png'), fullPage: true })
 })
 
 test('authenticated mobile buyer and seller screens, forms, and tables', async ({ page }, info) => {
