@@ -45,7 +45,7 @@ const campaigns = computed(() => data.value?.results || [])
           ><NuxtLink class="button secondary" to="/how-it-works">چطور کار می‌کند؟</NuxtLink>
         </div>
         <div class="hero-assurance">
-          <span><AppIcon name="shield" :size="16" /> رزرو بدون پرداخت آنلاین</span
+          <span><AppIcon name="shield" :size="16" /> بازگشت وجه در خرید ناموفق</span
           ><span><AppIcon name="leaf" :size="16" /> مستقیم از تولیدکننده</span>
         </div>
       </div>
@@ -66,7 +66,7 @@ const campaigns = computed(() => data.value?.results || [])
             <strong>یک قدم تا خرید بهتر</strong><span>نمونهٔ خرید گروهی</span>
           </div>
           <div class="mini-progress"></div>
-          <p>با تکمیل حدنصاب، خرید همه قطعی می‌شود.</p>
+          <p>در پایان مهلت، با تکمیل حدنصاب خرید قطعی می‌شود.</p>
         </div>
       </div>
     </section>
@@ -170,7 +170,7 @@ const campaigns = computed(() => data.value?.results || [])
         <div class="step">
           <div class="step-number"><span>۰۲</span><AppIcon name="users" :size="25" /></div>
           <h3>سهم خودت را رزرو کن</h3>
-          <p>تعداد موردنیازت را انتخاب کن و به جمع خریداران آن کمپین بپیوند.</p>
+          <p>کیف پول نمایشی را شارژ کن، تعداد را انتخاب کن و سهمت را رزرو کن.</p>
         </div>
         <div class="step">
           <div class="step-number"><span>۰۳</span><AppIcon name="package" :size="25" /></div>

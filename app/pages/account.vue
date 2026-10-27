@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useApi } from '~/composables/useApi'
 import { useResource } from '~/composables/useResource'
-import type { Order, Reservation } from '~/types'
+import type { Order, Reservation, Wallet } from '~/types'
 import { date, money, number } from '~/utils/format'
 const { request, user, ready, session } = useApi()
 const tab = ref('reservations')
@@ -13,11 +13,12 @@ const success = ref('')
 const { data, loading, error, refresh } = useResource(async () => {
   if (!ready.value) await session()
   if (!user.value || user.value.role !== 'buyer') return null
-  const [reservations, orders] = await Promise.all([
+  const [reservations, orders, wallet] = await Promise.all([
     request<Reservation[]>('/reservations/'),
     request<Order[]>('/orders/'),
+    request<Wallet>('/wallet/'),
   ])
-  return { reservations, orders }
+  return { reservations, orders, wallet }
 })
 const activeCount = computed(
   () => data.value?.reservations.filter((r) => r.status === 'active').length || 0,
@@ -30,7 +31,7 @@ async function cancel() {
   try {
     await request(`/reservations/${selected.value.id}/cancel/`, 'POST')
     selected.value = null
-    success.value = 'رزرو لغو شد و ظرفیت آزاد شد.'
+    success.value = 'رزرو لغو شد؛ مبلغ پرداخت‌شده به کیف پول برگشت و ظرفیت آزاد شد.'
     await refresh()
   } catch (e) {
     actionError.value = (e as Error).message
@@ -59,6 +60,7 @@ async function cancel() {
       <NuxtLink to="/auth?redirect=/account" class="button">ورود به حساب</NuxtLink>
     </div>
     <template v-else>
+      <WalletPanel v-if="data" :wallet="data.wallet" @updated="refresh" />
       <div class="summary-grid">
         <div class="summary-card">
           <span><AppIcon name="bag" /></span>
@@ -128,8 +130,18 @@ async function cancel() {
               <StatusBadge :status="reservation.status" />
               <p>
                 {{ number(reservation.quantity) }} {{ reservation.campaign.product.unit }} ·
-                {{ money(reservation.quantity * reservation.campaign.group_price) }} تومان
+                {{ money(reservation.quantity * reservation.unit_price) }} تومان
               </p>
+              <p v-if="reservation.status === 'active' && reservation.paid_amount">
+                پرداخت از کیف پول: {{ money(reservation.paid_amount) }} تومان · در انتظار نتیجهٔ
+                کمپین
+              </p>
+              <p
+                v-else-if="reservation.status === 'cancelled' || reservation.status === 'released'"
+              >
+                مبلغ پرداخت‌شده به کیف پول برگشت.
+              </p>
+              <p v-else-if="!reservation.paid_amount">رزرو نمایشی قدیمی؛ بدون پرداخت از کیف پول.</p>
               <p>مهلت: {{ date(reservation.campaign.deadline) }}</p>
             </div>
             <button
@@ -161,7 +173,8 @@ async function cancel() {
             ><StatusBadge :status="order.status" />
           </article>
           <p v-if="data.orders.length" class="alert info">
-            پرداخت و هماهنگی ارسال در این نسخه خارج از سامانه انجام می‌شود.
+            سفارش‌های جدید قبلاً از کیف پول پرداخت شده‌اند؛ مبلغ دوباره کسر نمی‌شود. ارسال در این
+            پروژه نمایشی است.
           </p>
         </div>
       </template> </template

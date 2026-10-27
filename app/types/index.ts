@@ -43,8 +43,23 @@ export interface Reservation {
   id: number
   campaign: Campaign
   quantity: number
+  unit_price: number
+  paid_amount: number
   status: 'active' | 'cancelled' | 'converted' | 'released'
   created_at: string
+}
+export interface WalletTransaction {
+  id: number
+  kind: 'top_up' | 'payment' | 'refund'
+  amount: number
+  balance_after: number
+  campaign_title: string | null
+  created_at: string
+}
+export interface Wallet {
+  balance: number
+  fake_top_up_enabled: boolean
+  transactions: WalletTransaction[]
 }
 export interface Order {
   id: number
