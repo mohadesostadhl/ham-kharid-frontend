@@ -24,6 +24,7 @@ import {
   Minus,
   CircleAlert,
   Wallet,
+  CircleUserRound,
 } from '@lucide/vue'
 const icons = {
   arrow: ArrowLeft,
@@ -50,6 +51,7 @@ const icons = {
   minus: Minus,
   alert: CircleAlert,
   wallet: Wallet,
+  profile: CircleUserRound,
 }
 defineProps<{ name: keyof typeof icons; size?: number }>()
 </script>

@@ -152,7 +152,7 @@ async function reserve() {
                   ><AppIcon name="wallet" :size="18" /> موجودی:
                   {{ money(buyerData.wallet.balance) }} تومان</span
                 >
-                <NuxtLink to="/account#wallet" class="text-link">شارژ کیف پول</NuxtLink>
+                <NuxtLink to="/profile#wallet" class="text-link">شارژ کیف پول</NuxtLink>
               </div>
               <p v-if="existing" class="purchase-note">
                 {{ number(existing.quantity) }} واحد قبلاً رزرو کرده‌اید. قیمت هر واحد:
@@ -189,7 +189,7 @@ async function reserve() {
               </div>
               <p v-if="insufficient && maxQuantity > 0" class="alert info">
                 موجودی کافی نیست؛ ابتدا
-                <NuxtLink to="/account#wallet" class="text-link">کیف پول را شارژ کنید</NuxtLink>.
+                <NuxtLink to="/profile#wallet" class="text-link">کیف پول را شارژ کنید</NuxtLink>.
               </p>
             </template>
             <NuxtLink
