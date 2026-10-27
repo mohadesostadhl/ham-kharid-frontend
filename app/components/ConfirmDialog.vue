@@ -21,7 +21,7 @@ onBeforeUnmount(() => {
   >
     <div class="dialog-icon"><AppIcon name="alert" :size="28" /></div>
     <h2 id="dialog-title">{{ title }}</h2>
-    <p>با لغو رزرو، ظرفیت برای خریداران دیگر آزاد می‌شود.</p>
+    <p>با لغو رزرو، مبلغ پرداخت‌شده به کیف پول برمی‌گردد و ظرفیت برای دیگران آزاد می‌شود.</p>
     <div class="button-row">
       <button class="button danger" :disabled="busy" @click="emit('confirm')">
         {{ busy ? 'در حال انجام…' : 'بله، لغو رزرو' }}</button
