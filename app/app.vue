@@ -29,6 +29,7 @@ onMounted(async () => {
         >
         <nav class="desktop-nav" aria-label="ناوبری اصلی">
           <NuxtLink to="/" :class="{ active: route.path === '/' }">کشف خریدها</NuxtLink
+          ><NuxtLink to="/reverse-purchase">خرید معکوس</NuxtLink
           ><NuxtLink to="/how-it-works">چطور کار می‌کند؟</NuxtLink
           ><NuxtLink v-if="user?.role === 'seller'" to="/seller">پنل فروشنده</NuxtLink>
         </nav>
@@ -65,7 +66,7 @@ onMounted(async () => {
         aria-label="فهرست موبایل"
         @click="menu = false"
       >
-        <NuxtLink to="/">کشف خریدها</NuxtLink
+        <NuxtLink to="/">کشف خریدها</NuxtLink><NuxtLink to="/reverse-purchase">خرید معکوس</NuxtLink
         ><NuxtLink to="/how-it-works">چطور کار می‌کند؟</NuxtLink
         ><NuxtLink v-if="user" :to="user.role === 'seller' ? '/seller' : '/account'"
           >حساب من</NuxtLink

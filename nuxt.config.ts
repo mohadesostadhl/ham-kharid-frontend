@@ -24,7 +24,7 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
-    '/api/**': { proxy: `${process.env.API_UPSTREAM || 'http://127.0.0.1:8000'}/api/**` },
+    '*/api/**': { proxy: `${process.env.API_UPSTREAM || 'http://127.0.0.1:8000'}/api/**` },
   },
   typescript: { strict: true },
 })

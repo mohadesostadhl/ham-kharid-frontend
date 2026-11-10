@@ -78,3 +78,25 @@ export interface Paginated<T> {
   previous: string | null
   results: T[]
 }
+
+export interface PurchaseOffer {
+  id: number
+  seller: number
+  seller_name: string
+  unit_price: number
+  description: string
+  is_accepted: boolean
+}
+export interface PurchaseRequest {
+  id: number
+  buyer: number
+  buyer_name: string
+  title: string
+  description: string
+  quantity: number
+  unit: string
+  max_unit_price: number
+  deadline: string
+  status: 'open' | 'closed'
+  offers: PurchaseOffer[]
+}
