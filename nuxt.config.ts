@@ -24,7 +24,14 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
-    '/api/**': { proxy: `${process.env.API_UPSTREAM || 'http://127.0.0.1:8000'}/api/**` },
+    ...(process.env.API_UPSTREAM
+      ? { '/api/**': { proxy: `${process.env.API_UPSTREAM}/api/**` } }
+      : {}),
+  },
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
+    },
   },
   typescript: { strict: true },
 })

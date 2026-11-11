@@ -9,11 +9,15 @@ function message(value: unknown): string {
   return 'ارتباط برقرار نشد. دوباره تلاش کنید.'
 }
 export function useApi() {
+  const config = useRuntimeConfig()
+  const apiBase = String(config.public.apiBase).replace(/\/$/, '')
   const user = useState<User | null>('user', () => null)
   const csrf = useState('csrf', () => '')
   const ready = useState('session-ready', () => false)
   async function session() {
-    const data = await $fetch<AuthState>('/api/auth/session/')
+    const data = await $fetch<AuthState>(`${apiBase}/auth/session/`, {
+      credentials: 'include',
+    })
     user.value = data.user
     csrf.value = data.csrf_token
     ready.value = true
@@ -25,9 +29,10 @@ export function useApi() {
   ): Promise<T> {
     try {
       if (method !== 'GET' && !csrf.value) await session()
-      return await $fetch<T>(`/api${path}`, {
+      return await $fetch<T>(`${apiBase}${path}`, {
         method,
         body,
+        credentials: 'include',
         headers: method === 'POST' ? { 'X-CSRFToken': csrf.value } : {},
       })
     } catch (error: unknown) {
