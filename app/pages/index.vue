@@ -39,6 +39,7 @@ const campaigns = computed(() => data.value?.results || [])
           محصولات خوب را مستقیم از تولیدکننده کشف کن.<br />وقتی تعدادمان بیشتر شود، سهم هر کدام‌مان
           کمتر می‌شود.
         </p>
+        <p class="hero-audience"><strong>برای چه کسانی؟</strong> فروشگاه‌های کوچک، خرده‌فروشان و کسب‌وکارهای نوپا با خریدهای تکرارشونده و کم‌حجم.</p>
         <div class="button-row">
           <a class="button" href="#campaigns"
             >کشف خریدهای گروهی <AppIcon name="arrow" :size="19" /></a

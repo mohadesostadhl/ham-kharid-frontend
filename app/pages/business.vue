@@ -1,7 +1,11 @@
 <script setup lang="ts">
 const toc = [
   { id: 'idea', label: 'ایده' },
+  { id: 'friction', label: 'اصطکاک مسئله' },
   { id: 'maturity', label: 'بلوغ ایده' },
+  { id: 'radar', label: 'رادار ۸ پرسش' },
+  { id: 'boundaries', label: 'مرز فرایندها' },
+  { id: 'validation', label: 'اعتبارسنجی' },
   { id: 'canvas', label: 'بوم کسب‌وکار' },
   { id: 'market', label: 'بازار و مشتری' },
   { id: 'competition', label: 'رقبا' },
@@ -10,6 +14,32 @@ const toc = [
   { id: 'value-chain', label: 'زنجیره ارزش' },
   { id: 'demo', label: 'دموی محصول' },
   { id: 'roadmap', label: 'نقشه راه' },
+]
+
+const radarQuestions = [
+  ['چه کسی مسئله را دارد؟', 'فروشگاه‌های کوچک و کسب‌وکارهای نوپایی که خرید تکرارشونده اما کم‌حجم دارند.', 'فرضیه؛ باید با مصاحبه با حداقل ۱۰ کسب‌وکار محلی سنجیده شود.'],
+  ['مسئله چقدر مهم و فوری است؟', 'قیمت خرید، حداقل سفارش و هزینه ارسال مستقیماً روی حاشیه سود اثر می‌گذارد.', 'فرضیه؛ شواهد اولیه از منطق اقتصادی مسئله است، نه اندازه‌گیری میدانی.'],
+  ['راه‌حل فعلی چیست؟', 'خرید از عمده‌فروش، سفارش مستقیم یا هماهنگی دستی در گروه‌های پیام‌رسان.', 'مشاهدهٔ کیفی و قابل بررسی؛ هنوز مطالعهٔ رقابتی رسمی انجام نشده است.'],
+  ['راه‌حل پیشنهادی چه ارزشی می‌سازد؟', 'تجمیع تقاضا، دسترسی به قیمت گروهی و نمایش شفاف پیشرفت سفارش.', 'در MVP قابل نمایش است؛ ارزش واقعی باید با رزرو و تکرار خرید آزموده شود.'],
+  ['چه کسی برای آن پول می‌دهد؟', 'در مدل اولیه، خریدار قیمت کالا را می‌پردازد و پلتفرم می‌تواند کارمزد شفاف بگیرد.', 'فرضیهٔ درآمدی؛ پرداخت واقعی در این نسخه فعال نیست.'],
+  ['آیا اجرای آن ممکن است؟', 'بخش دیجیتال با کمپین، رزرو و وضعیت سفارش پیاده شده است.', 'شواهد محصولی در MVP وجود دارد؛ تأمین، ارسال و تسویهٔ واقعی خارج از دامنه است.'],
+  ['چرا اکنون؟', 'رشد ابزارهای آنلاین و نیاز کسب‌وکارهای کوچک به خرید کم‌ریسک، اجرای هماهنگ را ممکن‌تر می‌کند.', 'فرضیهٔ زمینه‌ای؛ نیازمند دادهٔ بازار و گفت‌وگو با کاربران است.'],
+  ['مهم‌ترین ریسک چیست؟', 'رسیدن به حدنصاب، اعتماد به تأمین‌کننده و هماهنگی تحویل.', 'ریسک‌های شناخته‌شده؛ پایلوت محدود و سنجش نرخ تکمیل باید آن‌ها را ارزیابی کند.'],
+]
+
+const validationEvidence = [
+  ['شاهد موجود', 'MVP و دادهٔ ساختگی', 'نمایش فنی جریان جست‌وجو، رزرو، لغو و نتیجهٔ کمپین', 'نیازمند آزمون با کاربر واقعی'],
+  ['فرضیهٔ بازار', 'کسب‌وکار کوچک قیمت عمده می‌خواهد اما حجم کافی ندارد', 'پرسونا و منطق مسئله', 'مصاحبهٔ نیمه‌ساختاریافته با فروشگاه‌ها'],
+  ['فرضیهٔ ارزش', 'شفافیت حدنصاب تصمیم خرید را آسان‌تر می‌کند', 'نمایش پیشرفت کمپین در محصول', 'اندازه‌گیری نرخ کلیک و رزرو'],
+  ['فرضیهٔ عملیاتی', 'تجمیع سفارش هزینهٔ هماهنگی و ارسال را کم می‌کند', 'مدل مفهومی زنجیرهٔ ارزش', 'اجرای پایلوت یک دسته کالا'],
+]
+
+const processBoundaries = [
+  ['آنلاین', 'ثبت‌نام، ورود و انتخاب نقش', 'پلتفرم'],
+  ['آنلاین', 'جست‌وجو، مشاهدهٔ قیمت و حدنصاب', 'پلتفرم'],
+  ['آنلاین', 'رزرو، کیف پول نمایشی و پیگیری وضعیت', 'پلتفرم'],
+  ['آفلاین', 'تولید یا تأمین، بسته‌بندی و آماده‌سازی', 'تأمین‌کننده'],
+  ['آفلاین', 'حمل، تحویل و تقسیم فیزیکی کالا', 'تأمین‌کننده / عملیات'],
 ]
 
 const maturity = [
@@ -162,10 +192,38 @@ const roadmap = [
       </div>
     </section>
 
+    <section id="friction" class="business-section soft-section">
+      <div class="business-section-heading">
+        <div>
+          <div class="section-kicker">۰۲ · صورت‌بندی مسئله</div>
+          <h2>اصطکاک وضعیت موجود</h2>
+        </div>
+        <p>این بخش مسئلهٔ واقعی را از ویژگی‌های محصول جدا می‌کند.</p>
+      </div>
+      <div class="friction-grid">
+        <article class="business-card">
+          <span class="card-icon warm"><AppIcon name="clock" /></span>
+          <h3>اتلاف زمان</h3>
+          <p>خریدار باید چند تأمین‌کننده را مقایسه کند، برای قیمت و موجودی پیام بدهد و سفارش‌های پراکنده را جداگانه پیگیری کند.</p>
+        </article>
+        <article class="business-card">
+          <span class="card-icon"><AppIcon name="wallet" /></span>
+          <h3>اتلاف هزینه</h3>
+          <p>سفارش کم‌حجم معمولاً از قیمت عمده محروم است و هزینهٔ ارسال به ازای هر واحد بیشتر می‌شود.</p>
+        </article>
+        <article class="business-card">
+          <span class="card-icon"><AppIcon name="shield" /></span>
+          <h3>کاستی راه‌حل‌های جاری</h3>
+          <p>عمده‌فروش سنتی حداقل سفارش بالایی دارد و خرید گروهی در پیام‌رسان‌ها شفافیت، سابقه و وضعیت مرحله‌ای ندارد.</p>
+        </article>
+      </div>
+      <div class="evidence-note"><strong>مرز ادعا:</strong> این صورت‌بندی فعلاً فرضیهٔ قابل آزمون است؛ برای تبدیل آن به شواهد، مصاحبه و پایلوت لازم است.</div>
+    </section>
+
     <section id="maturity" class="business-section soft-section">
       <div class="business-section-heading">
         <div>
-          <div class="section-kicker">۰۲ · واقع‌بینی در اجرا</div>
+          <div class="section-kicker">۰۳ · واقع‌بینی در اجرا</div>
           <h2>بلوغ ایده</h2>
         </div>
         <p>این صفحه یک تحلیل دانشگاهی است؛ اعتبارسنجی بازار هنوز باید با آزمون واقعی انجام شود.</p>
@@ -190,10 +248,49 @@ const roadmap = [
       </div>
     </section>
 
+    <section id="radar" class="business-section">
+      <div class="business-section-heading">
+        <div>
+          <div class="section-kicker">۰۴ · ارزیابی ایدهٔ بالغ</div>
+          <h2>رادار ۸ پرسش</h2>
+        </div>
+        <p>پاسخ‌ها بین دانسته‌ها، فرضیه‌ها و آزمون بعدی تفکیک شده‌اند.</p>
+      </div>
+      <div class="radar-grid">
+        <article v-for="(item, index) in radarQuestions" :key="item[0]" class="radar-card">
+          <span class="radar-number">۰{{ index + 1 }}</span>
+          <h3>{{ item[0] }}</h3>
+          <p>{{ item[1] }}</p>
+          <small>{{ item[2] }}</small>
+        </article>
+      </div>
+    </section>
+
+    <section id="boundaries" class="business-section soft-section">
+      <div class="business-section-heading">
+        <div>
+          <div class="section-kicker">۰۵ · دامنهٔ محصول</div>
+          <h2>مرز فرایندهای آنلاین و آفلاین</h2>
+        </div>
+        <p>پلتفرم هماهنگ‌کنندهٔ اطلاعات و تقاضاست، نه مالک کالا یا مجری ارسال.</p>
+      </div>
+      <div class="comparison-wrap">
+        <table class="comparison-table boundaries-table">
+          <thead><tr><th>نوع</th><th>فرایند</th><th>مسئول اصلی</th></tr></thead>
+          <tbody>
+            <tr v-for="item in processBoundaries" :key="`${item[0]}-${item[1]}`">
+              <td><span class="process-badge" :class="item[0] === 'آنلاین' ? 'online' : 'offline'">{{ item[0] }}</span></td>
+              <td>{{ item[1] }}</td><td>{{ item[2] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <section id="canvas" class="business-section">
       <div class="business-section-heading">
         <div>
-          <div class="section-kicker">۰۳ · مدل کسب‌وکار</div>
+          <div class="section-kicker">۰۶ · مدل کسب‌وکار</div>
           <h2>بوم کسب‌وکار</h2>
         </div>
         <p>نه قطعه اصلی مدل هم‌خرید در یک نگاه.</p>
@@ -215,7 +312,7 @@ const roadmap = [
     <section id="market" class="business-section soft-section">
       <div class="business-section-heading">
         <div>
-          <div class="section-kicker">۰۴ · بازار هدف</div>
+          <div class="section-kicker">۰۷ · بازار هدف</div>
           <h2>بازار و مشتری</h2>
         </div>
         <p>تمرکز اولیه روی خریدارانی است که نیاز تکرارشونده و حجم محدود دارند.</p>
@@ -251,10 +348,26 @@ const roadmap = [
       </div>
     </section>
 
+    <section id="validation" class="business-section">
+      <div class="business-section-heading">
+        <div>
+          <div class="section-kicker">۰۶ · اعتبارسنجی اولیه</div>
+          <h2>شواهد، فرضیه‌ها و آزمون بعدی</h2>
+        </div>
+        <p>در این نسخه، دادهٔ ساختگی با مصاحبهٔ واقعی اشتباه گرفته نشده است.</p>
+      </div>
+      <div class="comparison-wrap">
+        <table class="comparison-table evidence-table">
+          <thead><tr><th>موضوع</th><th>شاهد فعلی</th><th>برداشت</th><th>آزمون بعدی</th></tr></thead>
+          <tbody><tr v-for="item in validationEvidence" :key="item[0]"><td>{{ item[0] }}</td><td>{{ item[1] }}</td><td>{{ item[2] }}</td><td>{{ item[3] }}</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
     <section id="competition" class="business-section">
       <div class="business-section-heading">
         <div>
-          <div class="section-kicker">۰۵ · جایگاه پیشنهادی</div>
+          <div class="section-kicker">۰۹ · جایگاه پیشنهادی</div>
           <h2>رقبا و گزینه‌های جایگزین</h2>
         </div>
         <p>این مقایسه کیفی است و ادعای رتبه‌بندی یا داده بازار ندارد.</p>
@@ -312,7 +425,7 @@ const roadmap = [
     <section id="marketing" class="business-section soft-section">
       <div class="business-section-heading">
         <div>
-          <div class="section-kicker">۰۶ · رسیدن به مشتری</div>
+          <div class="section-kicker">۱۰ · رسیدن به مشتری</div>
           <h2>طراحی و بازاریابی</h2>
         </div>
         <p>اعتماد، شفافیت و شروع کوچک سه اصل ورود به بازار هستند.</p>
@@ -362,7 +475,7 @@ const roadmap = [
     <section id="economics" class="business-section">
       <div class="business-section-heading">
         <div>
-          <div class="section-kicker">۰۷ · منطق مالی</div>
+          <div class="section-kicker">۱۱ · منطق مالی</div>
           <h2>مدل درآمدی و هزینه</h2>
         </div>
         <p>اعداد این بخش صرفاً نمونه محاسباتی‌اند و پیش‌بینی مالی نیستند.</p>
@@ -404,7 +517,7 @@ const roadmap = [
     <section id="value-chain" class="business-section soft-section">
       <div class="business-section-heading">
         <div>
-          <div class="section-kicker">۰۸ · نقش پلتفرم</div>
+          <div class="section-kicker">۱۲ · نقش پلتفرم</div>
           <h2>واسطه‌گری و زنجیره ارزش</h2>
         </div>
         <p>پلتفرم مالک کالا نیست؛ هماهنگ‌کننده تقاضا، اطلاعات و فرایند سفارش است.</p>
@@ -437,7 +550,7 @@ const roadmap = [
     <section id="demo" class="business-section">
       <div class="business-section-heading">
         <div>
-          <div class="section-kicker">۰۹ · تجربه محصول</div>
+          <div class="section-kicker">۱۳ · تجربه محصول</div>
           <h2>دموی محصول</h2>
         </div>
         <p>مسیر محصول از نگاه یک کسب‌وکار کوچک.</p>
@@ -492,7 +605,7 @@ const roadmap = [
     <section id="roadmap" class="business-section roadmap-section">
       <div class="business-section-heading">
         <div>
-          <div class="section-kicker">۱۰ · مسیر پیش‌رو</div>
+          <div class="section-kicker">۱۴ · مسیر پیش‌رو</div>
           <h2>نقشه راه توسعه</h2>
         </div>
         <p>هر مرحله باید با یادگیری مرحله قبل و شواهد واقعی بازار ادامه پیدا کند.</p>

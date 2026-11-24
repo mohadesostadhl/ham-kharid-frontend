@@ -31,7 +31,7 @@ onMounted(async () => {
           <NuxtLink to="/" :class="{ active: route.path === '/' }">کشف خریدها</NuxtLink
           ><NuxtLink to="/how-it-works">چطور کار می‌کند؟</NuxtLink
           ><NuxtLink to="/business" :class="{ active: route.path === '/business' }"
-            >درباره کسب‌وکار</NuxtLink
+            >پروندهٔ تحلیلی کسب‌وکار</NuxtLink
           ><NuxtLink v-if="user?.role === 'seller'" to="/seller">پنل فروشنده</NuxtLink>
         </nav>
         <div class="header-actions">
@@ -69,7 +69,7 @@ onMounted(async () => {
       >
         <NuxtLink to="/">کشف خریدها</NuxtLink
         ><NuxtLink to="/how-it-works">چطور کار می‌کند؟</NuxtLink
-        ><NuxtLink to="/business">درباره کسب‌وکار</NuxtLink
+        ><NuxtLink to="/business">پروندهٔ تحلیلی کسب‌وکار</NuxtLink
         ><NuxtLink v-if="user" :to="user.role === 'seller' ? '/seller' : '/account'"
           >حساب من</NuxtLink
         ><NuxtLink v-if="user" to="/profile">پروفایل من</NuxtLink>

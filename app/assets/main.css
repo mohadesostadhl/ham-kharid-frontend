@@ -26,6 +26,70 @@
   background: var(--background);
   font-synthesis: none;
 }
+
+/* Business-analysis additions */
+.hero-audience {
+  max-width: 620px;
+  margin-top: 14px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--muted-background);
+  font-size: 0.88rem;
+}
+.friction-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.evidence-note {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-right: 3px solid var(--accent);
+  background: #fff8f2;
+  color: var(--muted-foreground);
+}
+.radar-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.radar-card {
+  position: relative;
+  padding: 22px 22px 20px 58px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+.radar-number {
+  position: absolute;
+  top: 19px;
+  left: 20px;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.radar-card h3 { margin-bottom: 7px; }
+.radar-card p { color: var(--foreground); font-size: 0.92rem; }
+.radar-card small { display: block; margin-top: 10px; color: var(--muted-foreground); line-height: 1.8; }
+.process-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.process-badge.online { background: #e7f5ed; color: var(--success); }
+.process-badge.offline { background: #fff0e6; color: var(--accent); }
+.boundaries-table td, .boundaries-table th, .evidence-table td, .evidence-table th { vertical-align: top; }
+.evidence-table { min-width: 850px; }
+
+@media (max-width: 760px) {
+  .friction-grid, .radar-grid { grid-template-columns: 1fr; }
+  .radar-card { padding-left: 52px; }
+  .hero-audience { font-size: 0.82rem; }
+}
 * {
   box-sizing: border-box;
 }
